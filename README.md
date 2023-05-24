@@ -22,7 +22,7 @@ Antes de iniciar, verifique se você possui o seguinte instalado:
 1. Clone este repositório para sua máquina local:
 
    ```shell
-   git clone https://github.com/seu-usuario/sistema-de-reservas-nestjs.git
+   git clone https://github.com/weslleycz/reserva-flex.git
 
 2. Instale as dependências do projeto:
    ```shell
