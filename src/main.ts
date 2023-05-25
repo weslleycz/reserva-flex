@@ -8,10 +8,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const options = new DocumentBuilder()
-    .setTitle('Exemplo de API')
-    .setDescription('Descrição da API')
+    .setTitle('Reserva-Flex API')
+    .setDescription(
+      'Este é um sistema de reservas construído com o NestJS que permite aos usuários fazerem reservas em hotel.',
+    )
     .setVersion('1.0')
-    .addTag('Exemplo')
+    .addTag('Exemplo', 'Hotel')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
