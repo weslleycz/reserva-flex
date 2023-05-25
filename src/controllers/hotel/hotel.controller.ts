@@ -72,4 +72,28 @@ export class HotelController {
       );
     }
   }
+
+  @Put(':id')
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({
+    summary: 'Atualizar hotel',
+    description: 'Rota para atualizar hotel.',
+  })
+  @ApiResponse({ status: 200, description: 'Hotel atualizado' })
+  @ApiResponse({ status: 400, description: 'Não foi possível atualizar hotel' })
+  async updateUser(@Param('id') id: string, @Body() data: UpdateHotelDto) {
+    try {
+      await this.prisma.hotel.update({
+        where: { id },
+        data,
+      });
+      return { message: 'Hotel atualizado' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possível atualizar hotel',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
 }
