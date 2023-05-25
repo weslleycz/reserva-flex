@@ -119,4 +119,23 @@ export class HotelController {
       );
     }
   }
+
+  @Get('search/:name')
+  @ApiOperation({
+    summary: 'Pesquisa hotel por nome',
+    description: 'Essa rota permite pesquisar hotel por nome.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna uma lista de hoteis com base no nome',
+  })
+  async searchHotel(@Param('name') name: string) {
+    return await this.prisma.hotel.findMany({
+      where: {
+        name: {
+          contains: name,
+        },
+      },
+    });
+  }
 }
