@@ -10,9 +10,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Hotel {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  location  String
+  amenities String
+  imagens   String[]
+  Room      Room[]
+
+  @@map("Hotels")
+}
+
+model Room {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  number       Int        @unique
+  type         String
+  price        Int
+  hotel        Hotel      @relation(fields: [hotelId], references: [id])
+  availability StatusRoom @default(Available)
+  Booking      Booking[]
+  hotelId      String     @db.ObjectId
+
+  @@map("Rooms")
+}
+
 model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  email    String @unique
-  password String
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String    @unique
+  password  String
+  telephone String
+  Booking   Booking[]
+
+  @@map("Users")
+}
+
+model Booking {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  checkinDate    DateTime
+  checkoutDate   DateTime
+  numberOfGuests Int
+  status         StatusBooking @default(Pending)
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
+  room           Room          @relation(fields: [roomId], references: [id])
+  roomId         String        @db.ObjectId
+
+  @@map("Bookings")
+}
+
+enum StatusRoom {
+  Available
+  Unavailable
+}
+
+enum StatusBooking {
+  Pending
+  Confirmed
+  Cancelada
 }
