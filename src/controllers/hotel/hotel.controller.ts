@@ -96,4 +96,27 @@ export class HotelController {
     }
   }
 
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Deletar hotel',
+    description: 'Rota para deletar hotel.',
+  })
+  @ApiResponse({ status: 200, description: 'Hotel deletado com sucesso' })
+  @ApiResponse({ status: 400, description: 'Não foi possível deletar hotel' })
+  async deleteHotel(@Param('id') id: string) {
+    console.log(id);
+    try {
+      await this.prisma.hotel.delete({
+        where: {
+          id,
+        },
+      });
+      return { message: 'Hotel deletado com sucesso' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possível deletar hotel',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
