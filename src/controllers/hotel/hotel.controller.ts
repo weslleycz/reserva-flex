@@ -50,4 +50,26 @@ export class HotelController {
       throw new HttpException('Hotel não encontrado', HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Post()
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({
+    summary: 'Criar hotel',
+    description: 'Essa rota.',
+  })
+  @ApiResponse({ status: 200, description: 'Criar hotel' })
+  @ApiResponse({ status: 400, description: 'Rota para criar hotel' })
+  async createHotel(@Body() data: CreateHotelDto) {
+    try {
+      await this.prisma.hotel.create({
+        data,
+      });
+      return { message: 'Hotel criado com sucesso' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possível criar o hotel',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
