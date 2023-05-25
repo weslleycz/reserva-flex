@@ -31,4 +31,23 @@ export class HotelController {
     return this.prisma.hotel.findMany();
   }
 
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Selecionar hotel',
+    description: 'Essa rota retorna um hotel por id.',
+  })
+  @ApiResponse({ status: 200, description: 'Retorna um hotel' })
+  @ApiResponse({ status: 400, description: 'Hotel não encontrado' })
+  async getHotel(@Param('id') id: string) {
+    console.log(id);
+    try {
+      return await this.prisma.hotel.findUnique({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      throw new HttpException('Hotel não encontrado', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
