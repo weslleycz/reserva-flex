@@ -64,4 +64,13 @@ export class RoomController {
     }
   }
 
+  @Get()
+  @ApiOperation({
+    summary: 'Listar todos os quartos',
+    description: 'Essa rota lista todos os quartos.',
+  })
+  @ApiResponse({ status: 200, description: 'Criar quarto' })
+  async getAllRooms() {
+    return this.prisma.room.findMany();
+  }
 }
