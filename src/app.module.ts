@@ -27,5 +27,8 @@ export class AppModule implements NestModule {
     consumer
       .apply(isAdm)
       .forRoutes({ path: 'hotel', method: RequestMethod.PUT });
+    consumer
+      .apply(isAdm)
+      .forRoutes({ path: 'room/:id', method: RequestMethod.POST });
   }
 }

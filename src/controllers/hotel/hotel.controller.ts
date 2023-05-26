@@ -69,7 +69,7 @@ export class HotelController {
     description: 'Essa rota.',
   })
   @ApiResponse({ status: 200, description: 'Criar hotel' })
-  @ApiResponse({ status: 400, description: 'Rota para criar hotel' })
+  @ApiResponse({ status: 400, description: 'Não foi possível criar o hotel' })
   async createHotel(@Body() data: CreateHotelDto) {
     try {
       await this.prisma.hotel.create({
@@ -129,7 +129,6 @@ export class HotelController {
   @ApiResponse({ status: 200, description: 'Hotel deletado com sucesso' })
   @ApiResponse({ status: 400, description: 'Não foi possível deletar hotel' })
   async deleteHotel(@Param('id') id: string) {
-    console.log(id);
     try {
       await this.prisma.hotel.delete({
         where: {
