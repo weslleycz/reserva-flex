@@ -39,7 +39,7 @@ Antes de executar o projeto, é necessário configurar as seguintes variáveis d
 - `EMAIL_USERNAME`: Nome de usuário do serviço de e-mail.
 - `EMAIL_PASSWORD`: Senha do serviço de e-mail.
 - `DATABASE_URL`: URL da base de dados utilizada para armazenar as reservas.
-
+- `Security_Key`: Senha de segurança para mockar o token de administrador .
 
 ## Tecnologias utilizadas
 
@@ -49,4 +49,4 @@ O projeto utiliza as seguintes tecnologias:
 - **NestJS**: Framework Node.js para construção de aplicações server-side.
 - **TypeScript**: Linguagem de programação que adiciona recursos ao JavaScript.
 - **Socket.IO**: Biblioteca de WebSockets para comunicação em tempo real.
-- **MongoDB**
+- **MongoDB**: MongoDB é um software de banco de dados orientado a documentos livre, de código aberto e multiplataforma, escrito na linguagem C++.
