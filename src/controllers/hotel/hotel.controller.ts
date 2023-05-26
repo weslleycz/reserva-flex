@@ -10,11 +10,16 @@ import {
   HttpStatus,
   HttpException,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiHeader,
+} from '@nestjs/swagger';
 import { PrismaService } from '../../services/prisma.service';
-import { CreateHotelDto } from 'src/validators/CreateHotelDto';
+import { CreateHotelDto, UpdateHotelDto } from 'src/validators/Hotel.dtos';
 import { ValidationPipe } from '@nestjs/common';
-import { UpdateHotelDto } from 'src/validators/UpdateHotelDto';
 
 @ApiTags('Hotel')
 @Controller('hotel')
@@ -39,7 +44,6 @@ export class HotelController {
   @ApiResponse({ status: 200, description: 'Retorna um hotel' })
   @ApiResponse({ status: 400, description: 'Hotel não encontrado' })
   async getHotel(@Param('id') id: string) {
-    console.log(id);
     try {
       return await this.prisma.hotel.findUnique({
         where: {
@@ -52,6 +56,13 @@ export class HotelController {
   }
 
   @Post()
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Security_Key',
+    description: 'Token de acesso',
+    required: true,
+    example: 'Security_Key <token>',
+  })
   @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Criar hotel',
@@ -74,6 +85,13 @@ export class HotelController {
   }
 
   @Put(':id')
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Security_Key',
+    description: 'Token de acesso',
+    required: true,
+    example: 'Security_Key <token>',
+  })
   @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Atualizar hotel',
@@ -97,9 +115,16 @@ export class HotelController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Deletar hotel',
     description: 'Rota para deletar hotel.',
+  })
+  @ApiHeader({
+    name: 'Security_Key',
+    description: 'Token de acesso',
+    required: true,
+    example: 'Security_Key <token>',
   })
   @ApiResponse({ status: 200, description: 'Hotel deletado com sucesso' })
   @ApiResponse({ status: 400, description: 'Não foi possível deletar hotel' })

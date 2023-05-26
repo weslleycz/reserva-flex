@@ -14,6 +14,7 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('Exemplo', 'Hotel')
+    .addTag('Room')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
