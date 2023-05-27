@@ -138,4 +138,23 @@ export class RoomController {
       );
     }
   }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Selecionar quarto',
+    description: 'Essa rota retorna um quarto por id.',
+  })
+  @ApiResponse({ status: 200, description: 'Retorna um quarto' })
+  @ApiResponse({ status: 400, description: 'Quarto não encontrado' })
+  async selectRoom(@Param('id') id: string) {
+    try {
+      return await this.prisma.room.findUnique({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      throw new HttpException('Quarto não encontrado', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
