@@ -11,11 +11,12 @@ import { PrismaService } from './services/prisma.service';
 import { RoomController } from './controllers/room/room.controller';
 import { isAdm, log } from './middlewares';
 import { UserController } from './controllers/user/user.controller';
+import { GridFsService } from './services/gridfs.service';
 
 @Module({
   imports: [],
   controllers: [AppController, HotelController, RoomController, UserController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, GridFsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
