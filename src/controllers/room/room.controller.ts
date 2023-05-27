@@ -7,6 +7,7 @@ import {
   Post,
   Get,
   Delete,
+  Put,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,7 +18,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { PrismaService } from '../../services/prisma.service';
-import { CreateRoomDto } from 'src/validators/Room.dtos';
+import { CreateRoomDto, UpdateRoomDto } from 'src/validators/Room.dtos';
 
 @ApiTags('Room')
 @Controller('room')
@@ -73,7 +74,7 @@ export class RoomController {
   })
   @ApiResponse({ status: 200, description: 'Criar quarto' })
   async getAllRooms() {
-    return this.prisma.room.findMany();
+    return await this.prisma.room.findMany();
   }
 
   @Delete(':id')
@@ -90,7 +91,7 @@ export class RoomController {
   })
   @ApiResponse({ status: 200, description: 'Quarto deletado com sucesso' })
   @ApiResponse({ status: 400, description: 'Não foi possível deletar quarto' })
-  async deleteHotel(@Param('id') id: string) {
+  async deleteRoom(@Param('id') id: string) {
     try {
       await this.prisma.room.delete({
         where: {
@@ -101,6 +102,38 @@ export class RoomController {
     } catch (error) {
       throw new HttpException(
         'Não foi possível deletar quarto',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Put(':id')
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Security_Key',
+    description: 'Token de acesso',
+    required: true,
+    example: 'Security_Key <token>',
+  })
+  @ApiOperation({
+    summary: 'Atualizar quarto',
+    description: 'Rota para atualizar quarto.',
+  })
+  @ApiResponse({ status: 200, description: 'Hotel quarto' })
+  @ApiResponse({
+    status: 400,
+    description: 'Não foi possível atualizar quarto',
+  })
+  async updateUser(@Param('id') id: string, @Body() data: UpdateRoomDto) {
+    try {
+      await this.prisma.room.update({
+        where: { id },
+        data,
+      });
+      return { message: 'Quarto atualizado' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possível atualizar quarto',
         HttpStatus.BAD_REQUEST,
       );
     }
