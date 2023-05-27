@@ -13,7 +13,7 @@ export class GridFsService {
       `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@localhost:27017`,
     );
 
-    const db = client.db('databaseName');
+    const db = client.db('imagens');
     this.bucket = new GridFSBucket(db);
   }
 
