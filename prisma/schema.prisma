@@ -26,6 +26,7 @@ model Room {
   number       Int        @unique
   type         String
   price        Int
+  description  String
   hotel        Hotel      @relation(fields: [hotelId], references: [id])
   availability StatusRoom @default(Available)
   Booking      Booking[]

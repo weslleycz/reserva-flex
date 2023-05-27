@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Get,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -43,7 +44,7 @@ export class RoomController {
   @ApiResponse({ status: 200, description: 'Criar quarto' })
   @ApiResponse({ status: 400, description: 'Não foi possível criar o quarto' })
   async createRoom(
-    @Body() { number, price, type }: CreateRoomDto,
+    @Body() { number, price, type, description }: CreateRoomDto,
     @Param('id') id: string,
   ) {
     try {
@@ -53,6 +54,7 @@ export class RoomController {
           price,
           type,
           hotelId: id,
+          description,
         },
       });
       return { message: 'Quarto criado com sucesso' };
@@ -72,5 +74,35 @@ export class RoomController {
   @ApiResponse({ status: 200, description: 'Criar quarto' })
   async getAllRooms() {
     return this.prisma.room.findMany();
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Deletar quarto',
+    description: 'Rota para deletar quarto.',
+  })
+  @ApiHeader({
+    name: 'Security_Key',
+    description: 'Token de acesso',
+    required: true,
+    example: 'Security_Key <token>',
+  })
+  @ApiResponse({ status: 200, description: 'Quarto deletado com sucesso' })
+  @ApiResponse({ status: 400, description: 'Não foi possível deletar quarto' })
+  async deleteHotel(@Param('id') id: string) {
+    try {
+      await this.prisma.room.delete({
+        where: {
+          id,
+        },
+      });
+      return { message: 'Quarto deletado com sucesso' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possível deletar quarto',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

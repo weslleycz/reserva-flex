@@ -18,4 +18,9 @@ export class CreateRoomDto {
   @IsNotEmpty()
   @IsInt()
   price: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 }
