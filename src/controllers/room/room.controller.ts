@@ -8,6 +8,7 @@ import {
   Get,
   Delete,
   Put,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,9 +17,11 @@ import {
   ApiBearerAuth,
   ApiHeader,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { PrismaService } from '../../services/prisma.service';
 import { CreateRoomDto, UpdateRoomDto } from 'src/validators/Room.dtos';
+import { Request } from 'express';
 
 @ApiTags('Room')
 @Controller('room')
@@ -155,6 +158,61 @@ export class RoomController {
       });
     } catch (error) {
       throw new HttpException('Quarto não encontrado', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('hotel/:id')
+  @ApiOperation({
+    summary: 'lista os quartos por hotel',
+    description: 'Essa rota lista os quartos por id de hotel.',
+  })
+  @ApiResponse({ status: 200, description: 'Retorna uma lista de quartos' })
+  @ApiResponse({ status: 400, description: 'Hotel não encontrado' })
+  @ApiParam({ name: 'id', description: 'Id do Hotel' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: true,
+    description: 'Número da página',
+  })
+  async getAllRoomsHotel(@Param('id') id: string, @Req() request: Request) {
+    const queryParams = request.query;
+    const cursor: number = +queryParams.page as number;
+    if (cursor === 1 || cursor === 0) {
+      try {
+        const counter = await this.prisma.room.count();
+        const totalPages = Math.ceil(counter / 25);
+        const rooms = await this.prisma.room.findMany({
+          take: 25,
+          where: {
+            hotelId: id,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        });
+        return { rooms, totalPages };
+      } catch (error) {
+        throw new HttpException('Hotel não encontrado', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      try {
+        const counter = await this.prisma.room.count();
+        const totalPages = Math.ceil(counter / 25);
+        const rooms = await this.prisma.room.findMany({
+          take: 25,
+          skip: cursor * 25,
+          where: {
+            hotelId: id,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        });
+        return { rooms, totalPages };
+      } catch (error) {
+        throw new HttpException('Hotel não encontrado', HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }
