@@ -10,10 +10,11 @@ import { HotelController } from './controllers/hotel/hotel.controller';
 import { PrismaService } from './services/prisma.service';
 import { RoomController } from './controllers/room/room.controller';
 import { isAdm, log } from './middlewares';
+import { UserController } from './controllers/user/user.controller';
 
 @Module({
   imports: [],
-  controllers: [AppController, HotelController, RoomController],
+  controllers: [AppController, HotelController, RoomController, UserController],
   providers: [AppService, PrismaService],
 })
 export class AppModule implements NestModule {

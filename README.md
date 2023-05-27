@@ -35,11 +35,11 @@ Antes de iniciar, verifique se você possui o seguinte instalado:
 
 Antes de executar o projeto, é necessário configurar as seguintes variáveis de ambiente:
 
-- `EMAIL_SERVICE`: Serviço de e-mail utilizado para envio de confirmações de reserva.
-- `EMAIL_USERNAME`: Nome de usuário do serviço de e-mail.
-- `EMAIL_PASSWORD`: Senha do serviço de e-mail.
+
 - `DATABASE_URL`: URL da base de dados utilizada para armazenar as reservas.
 - `Security_Key`: Senha de segurança para mockar o token de administrador .
+- `MONGO_USERNAME`: Usuário do mongodb.
+- `MONGO_PASSWORD`: Senha do mongodb.
 
 ## Tecnologias utilizadas
 
