@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { HotelController } from './controllers/hotel/hotel.controller';
 import { PrismaService } from './services/prisma.service';
 import { RoomController } from './controllers/room/room.controller';
-import { isAdm } from './middlewares/adm-guard/adm-guard.middleware';
+import { isAdm, log } from './middlewares';
 
 @Module({
   imports: [],
@@ -30,5 +30,6 @@ export class AppModule implements NestModule {
     consumer
       .apply(isAdm)
       .forRoutes({ path: 'room/:id', method: RequestMethod.POST });
+    consumer.apply(log).forRoutes('*');
   }
 }
