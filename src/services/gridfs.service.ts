@@ -10,7 +10,7 @@ export class GridFsService {
   }
   private async connectToMongo() {
     const client = await MongoClient.connect(
-      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@localhost:27017`,
+      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@localhost:27017/imagens?authSource=admin&retryWrites=true&w=majority`,
     );
 
     const db = client.db('imagens');

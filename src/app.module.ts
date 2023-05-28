@@ -18,6 +18,7 @@ import { ViewsController } from './controllers/views/views.controller';
 import { resolve } from 'path';
 import { TsxViewsModule } from 'nestjs-tsx-views';
 import { EmailService } from './services/nodemailer.service';
+import { jwtGuard } from './middlewares/jwt-guard/jwt-guard.middleware';
 
 @Module({
   imports: [
@@ -61,5 +62,8 @@ export class AppModule implements NestModule {
       .apply(isAdm)
       .forRoutes({ path: 'room/:id', method: RequestMethod.POST });
     consumer.apply(log).forRoutes('*');
+    consumer
+      .apply(jwtGuard)
+      .forRoutes({ path: 'user/uploadAvatar', method: RequestMethod.PUT });
   }
 }

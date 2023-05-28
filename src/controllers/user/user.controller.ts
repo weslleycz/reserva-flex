@@ -4,14 +4,26 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+  Headers,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PrismaService } from '../../services/prisma.service';
 import { BcryptService } from 'src/services/bcrypt.service';
-import { CreateUserDto } from '../../validators/User.dtos';
+import { CreateUserDto, LoginUserDto } from '../../validators/User.dtos';
 import { JWTService } from 'src/services/jwt.service';
 import { EmailService } from 'src/services/nodemailer.service';
 import { emailCreateUser } from '../../templates/emailCreateUser';
+import { GridFsService } from 'src/services/gridfs.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterFile } from 'multer';
+import { Readable } from 'stream';
+
+type IJWT = {
+  data: string;
+};
 
 @ApiTags('User')
 @Controller('user')
@@ -21,13 +33,14 @@ export class UserController {
     private bcrypt: BcryptService,
     private jwt: JWTService,
     private emailService: EmailService,
+    private readonly gridFsService: GridFsService,
   ) {}
   @Post()
   @ApiOperation({
     summary: 'Criar usuário',
     description: 'Rota para criar usuário.',
   })
-  @ApiResponse({ status: 200, description: 'Usuário criado' })
+  @ApiResponse({ status: 201, description: 'Retorna um token jwt' })
   @ApiResponse({ status: 400, description: 'E-mail já está cadastrado' })
   async createUser(
     @Body() { email, name, password, telephone }: CreateUserDto,
@@ -42,7 +55,7 @@ export class UserController {
         },
       });
       const token = this.jwt.login(user.id.toString());
-      await this.emailService.send({
+      this.emailService.send({
         email,
         text: emailCreateUser(name, email),
         title: 'Bem-vindo! Sua conta foi criada com sucesso',
@@ -53,6 +66,32 @@ export class UserController {
         'E-mail já está cadastrado',
         HttpStatus.BAD_REQUEST,
       );
+    }
+  }
+
+  @Post('login')
+  @ApiOperation({
+    summary: 'Login de usuário',
+    description: 'Rota para criar usuário.',
+  })
+  @ApiResponse({ status: 200, description: 'Retorna um token jwt' })
+  @ApiResponse({ status: 401, description: 'Email não vinculado' })
+  @ApiResponse({ status: 400, description: 'Ocorreu um erro inesperado' })
+  async loginUser(@Body() { email, password }: LoginUserDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (user != null) {
+      if (await this.bcrypt.comparePasswords(password, user.password)) {
+        const token = this.jwt.login(user.id.toString());
+        return { token };
+      } else {
+        throw new HttpException('Senha incorreta', HttpStatus.UNAUTHORIZED);
+      }
+    } else {
+      throw new HttpException('Email não vinculado', HttpStatus.UNAUTHORIZED);
     }
   }
 }

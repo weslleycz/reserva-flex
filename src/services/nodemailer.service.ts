@@ -9,7 +9,7 @@ type IEmail = {
 
 @Injectable()
 export class EmailService {
-  public async send({ email, text, title }: IEmail) {
+  public send({ email, text, title }: IEmail) {
     const transporter = nodemailer.createTransport({
       port: 465,
       host: 'smtp.gmail.com',
@@ -20,7 +20,7 @@ export class EmailService {
       secure: true,
     });
 
-    await transporter.sendMail({
+    transporter.sendMail({
       to: email,
       subject: title,
       html: text,

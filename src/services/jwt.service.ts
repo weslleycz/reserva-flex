@@ -17,4 +17,8 @@ export class JWTService {
       return false;
     }
   }
+
+  public decode(token: string) {
+    return jwt.decode(token);
+  }
 }

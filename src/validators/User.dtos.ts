@@ -48,3 +48,15 @@ export class CreateUserDto {
   })
   passwordConfirm!: string;
 }
+
+export class LoginUserDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  password: string;
+}
