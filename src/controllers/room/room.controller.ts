@@ -64,7 +64,7 @@ export class RoomController {
       return { message: 'Quarto criado com sucesso' };
     } catch (error) {
       throw new HttpException(
-        'Não foi possível criar o quarto',
+        'Numero do quarto já está registrado',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -186,6 +186,7 @@ export class RoomController {
           take: 25,
           where: {
             hotelId: id,
+            availability: 'Available',
           },
           orderBy: {
             id: 'asc',
