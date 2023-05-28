@@ -8,8 +8,19 @@ import {
   UploadedFile,
   UseInterceptors,
   Headers,
+  Get,
+  Param,
+  Res,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiHeader,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PrismaService } from '../../services/prisma.service';
 import { BcryptService } from 'src/services/bcrypt.service';
 import { CreateUserDto, LoginUserDto } from '../../validators/User.dtos';
@@ -20,6 +31,8 @@ import { GridFsService } from 'src/services/gridfs.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterFile } from 'multer';
 import { Readable } from 'stream';
+import { ObjectId } from 'mongodb';
+import { Response } from 'express';
 
 type IJWT = {
   data: string;
@@ -96,31 +109,92 @@ export class UserController {
   }
 
   @Put('uploadAvatar')
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'token',
+    description: 'Token de acesso',
+    required: true,
+    example: 'token <token>',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Upload feito com sucesso' })
+  @ApiResponse({
+    status: 400,
+    description: 'Não é possível fazer upload desse arquivo',
+  })
+  @ApiOperation({
+    summary: 'Atualizar foto de perfil',
+    description: 'Rota para atualizar foto de perfil.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
     @UploadedFile() file: MulterFile.File,
     @Headers() headers: Record<string, string>,
   ) {
-    const { buffer, originalname } = file;
+    try {
+      const { buffer, originalname } = file;
 
-    const token = <IJWT>this.jwt.decode(headers.token);
-    const fileStream = new Readable();
-    fileStream.push(buffer);
-    fileStream.push(null);
+      const token = <IJWT>this.jwt.decode(headers.token);
+      const fileStream = new Readable();
+      fileStream.push(buffer);
+      fileStream.push(null);
 
-    const fileId = await this.gridFsService.uploadFile(
-      fileStream,
-      originalname,
-    );
-    const idAvatar = fileId.toString() as string;
-    const user = await this.prisma.user.update({
+      const fileId = await this.gridFsService.uploadFile(
+        fileStream,
+        originalname,
+      );
+      const idAvatar = fileId.toString() as string;
+      await this.prisma.user.update({
+        where: {
+          id: token.data.toString(),
+        },
+        data: {
+          avatar: idAvatar,
+        },
+      });
+      return { message: 'Upload feito com sucesso' };
+    } catch (error) {
+      throw new HttpException(
+        'Não é possível fazer upload desse arquivo',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Baixar a foto de perfil',
+    description: 'Rota que retorna a imagem de perfil do usuario.',
+  })
+  @Get('avatar/:email')
+  async getAvatar(@Param('email') email: string, @Res() res: Response) {
+    const user = await this.prisma.user.findFirst({
       where: {
-        id: token.data.toString(),
-      },
-      data: {
-        avatar: idAvatar,
+        email,
       },
     });
-    return { fileId };
+    if (user.avatar != null) {
+      const fileStream = this.gridFsService.getFileStream(
+        ObjectId.createFromHexString(user.avatar),
+      );
+      res.set({
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': `attachment; filename=${user.avatar}`,
+      });
+
+      (await fileStream).pipe(res);
+    } else {
+      throw new HttpException('Avatar not found', HttpStatus.NOT_FOUND);
+    }
   }
 }
