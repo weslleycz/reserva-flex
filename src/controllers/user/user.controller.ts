@@ -94,4 +94,33 @@ export class UserController {
       throw new HttpException('Email não vinculado', HttpStatus.UNAUTHORIZED);
     }
   }
+
+  @Put('uploadAvatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @UploadedFile() file: MulterFile.File,
+    @Headers() headers: Record<string, string>,
+  ) {
+    const { buffer, originalname } = file;
+
+    const token = <IJWT>this.jwt.decode(headers.token);
+    const fileStream = new Readable();
+    fileStream.push(buffer);
+    fileStream.push(null);
+
+    const fileId = await this.gridFsService.uploadFile(
+      fileStream,
+      originalname,
+    );
+    const idAvatar = fileId.toString() as string;
+    const user = await this.prisma.user.update({
+      where: {
+        id: token.data.toString(),
+      },
+      data: {
+        avatar: idAvatar,
+      },
+    });
+    return { fileId };
+  }
 }
