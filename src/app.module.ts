@@ -14,16 +14,36 @@ import { UserController } from './controllers/user/user.controller';
 import { GridFsService } from './services/gridfs.service';
 import { BcryptService } from './services/bcrypt.service';
 import { JWTService } from './services/jwt.service';
+import { ViewsController } from './controllers/views/views.controller';
+import { resolve } from 'path';
+import { TsxViewsModule } from 'nestjs-tsx-views';
+import { EmailService } from './services/nodemailer.service';
 
 @Module({
-  imports: [],
-  controllers: [AppController, HotelController, RoomController, UserController],
+  imports: [
+    TsxViewsModule.registerAsync({
+      useFactory: () => ({
+        viewsDirectory: resolve(__dirname, './views'),
+        prettify: true,
+        exclude: ['/throws-exception'],
+        forRoutes: [ViewsController],
+      }),
+    }),
+  ],
+  controllers: [
+    AppController,
+    HotelController,
+    RoomController,
+    UserController,
+    ViewsController,
+  ],
   providers: [
     AppService,
     PrismaService,
     GridFsService,
     BcryptService,
     JWTService,
+    EmailService,
   ],
 })
 export class AppModule implements NestModule {

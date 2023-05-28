@@ -10,6 +10,8 @@ import { PrismaService } from '../../services/prisma.service';
 import { BcryptService } from 'src/services/bcrypt.service';
 import { CreateUserDto } from '../../validators/User.dtos';
 import { JWTService } from 'src/services/jwt.service';
+import { EmailService } from 'src/services/nodemailer.service';
+import { emailCreateUser } from '../../templates/emailCreateUser';
 
 @ApiTags('User')
 @Controller('user')
@@ -18,6 +20,7 @@ export class UserController {
     private prisma: PrismaService,
     private bcrypt: BcryptService,
     private jwt: JWTService,
+    private emailService: EmailService,
   ) {}
   @Post()
   @ApiOperation({
@@ -39,6 +42,11 @@ export class UserController {
         },
       });
       const token = this.jwt.login(user.id.toString());
+      await this.emailService.send({
+        email,
+        text: emailCreateUser(name, email),
+        title: 'Bem-vindo! Sua conta foi criada com sucesso',
+      });
       return { token };
     } catch (error) {
       throw new HttpException(
