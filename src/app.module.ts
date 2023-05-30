@@ -19,6 +19,8 @@ import { resolve } from 'path';
 import { TsxViewsModule } from 'nestjs-tsx-views';
 import { EmailService } from './services/nodemailer.service';
 import { jwtGuard } from './middlewares/jwt-guard/jwt-guard.middleware';
+import { BookingController } from './controllers/booking/booking.controller';
+import { StripeService } from './services/stripe.service';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { jwtGuard } from './middlewares/jwt-guard/jwt-guard.middleware';
     RoomController,
     UserController,
     ViewsController,
+    BookingController,
   ],
   providers: [
     AppService,
@@ -45,6 +48,7 @@ import { jwtGuard } from './middlewares/jwt-guard/jwt-guard.middleware';
     BcryptService,
     JWTService,
     EmailService,
+    StripeService,
   ],
 })
 export class AppModule implements NestModule {
@@ -65,5 +69,8 @@ export class AppModule implements NestModule {
     consumer
       .apply(jwtGuard)
       .forRoutes({ path: 'user/uploadAvatar', method: RequestMethod.PUT });
+    consumer
+      .apply(jwtGuard)
+      .forRoutes({ path: 'booking', method: RequestMethod.PUT });
   }
 }
