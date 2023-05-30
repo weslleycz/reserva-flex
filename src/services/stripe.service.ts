@@ -14,6 +14,7 @@ export class StripeService {
   async criarLinkDePagamento(
     descricao: string,
     valor: number,
+    days: number,
   ): Promise<string> {
     const product = await this.stripe.products.create({
       name: descricao,
@@ -31,7 +32,7 @@ export class StripeService {
       line_items: [
         {
           price: price.id,
-          quantity: 1,
+          quantity: days,
         },
       ],
       mode: 'payment',

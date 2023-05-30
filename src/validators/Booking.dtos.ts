@@ -3,11 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDate } from 'brazilian-class-validator';
 
 export class CreateBookingDto {
-  @IsString()
-  @ApiProperty()
-  @IsNotEmpty()
-  name: string;
-
   @ApiProperty()
   @IsNotEmpty()
   @IsDate()

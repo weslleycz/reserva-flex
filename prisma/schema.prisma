@@ -49,8 +49,8 @@ model User {
 
 model Booking {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  checkinDate    DateTime
-  checkoutDate   DateTime
+  checkinDate    String
+  checkoutDate   String
   numberOfGuests Int
   paymentID      String
   status         StatusBooking @default(Pending)

@@ -12,6 +12,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import moment from 'moment';
 import { JWTService } from 'src/services/jwt.service';
 import { PrismaService } from 'src/services/prisma.service';
 import { StripeService } from 'src/services/stripe.service';
@@ -45,15 +46,35 @@ export class BookingController {
     @Body() data: CreateBookingDto,
     @Headers() headers: Record<string, string>,
   ) {
-    const { checkinDate, name, numberOfGuests, roomId, days } = data;
+    const { checkinDate, numberOfGuests, roomId, days } = data;
     const room = await this.prismaService.room.findUnique({
       where: {
         id: roomId,
       },
     });
     if (room.availability != null && room.availability != 'Unavailable') {
-      const url = await this.stripeService.criarLinkDePagamento('ghhhhjj', 100);
+      const url = await this.stripeService.criarLinkDePagamento(
+        room.description,
+        room.price,
+        days,
+      );
       const token = <IJWT>this.jwt.decode(headers.token);
+      const checkoutDate = moment(new Date(checkinDate))
+        .add(days, 'days')
+        .toString();
+      const checkinDateBD = new Date(checkinDate).toString();
+      const checkoutDateBD = new Date(checkoutDate).toString();
+      await this.prismaService.booking.create({
+        data: {
+          checkinDate: checkinDateBD,
+          paymentID: url,
+          checkoutDate: checkoutDateBD,
+          numberOfGuests,
+          roomId: roomId,
+          userId: token.data,
+        },
+      });
+      return { paymentLink: url };
     } else {
       throw new HttpException(
         'Não é possível reservar esse quarto',

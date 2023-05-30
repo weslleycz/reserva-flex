@@ -71,6 +71,6 @@ export class AppModule implements NestModule {
       .forRoutes({ path: 'user/uploadAvatar', method: RequestMethod.PUT });
     consumer
       .apply(jwtGuard)
-      .forRoutes({ path: 'booking', method: RequestMethod.PUT });
+      .forRoutes({ path: 'booking', method: RequestMethod.POST });
   }
 }
