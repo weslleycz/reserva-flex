@@ -53,7 +53,7 @@ export class BookingController {
       },
     });
     if (room.availability != null && room.availability != 'Unavailable') {
-      const url = await this.stripeService.criarLinkDePagamento(
+      const session = await this.stripeService.criarLinkDePagamento(
         room.description,
         room.price,
         days,
@@ -64,17 +64,28 @@ export class BookingController {
         .toString();
       const checkinDateBD = new Date(checkinDate).toString();
       const checkoutDateBD = new Date(checkoutDate).toString();
+      const paymentTerm = moment(new Date()).add(1, 'day').toISOString();
       await this.prismaService.booking.create({
         data: {
           checkinDate: checkinDateBD,
-          paymentID: url,
           checkoutDate: checkoutDateBD,
           numberOfGuests,
           roomId: roomId,
           userId: token.data,
+          paymentTerm,
+          paymentID: session.id,
+          paymentUrl: session.url,
         },
       });
-      return { paymentLink: url };
+      await this.prismaService.room.update({
+        where: {
+          id: room.id,
+        },
+        data: {
+          availability: 'Unavailable',
+        },
+      });
+      return { paymentLink: session.url };
     } else {
       throw new HttpException(
         'Não é possível reservar esse quarto',

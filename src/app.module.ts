@@ -21,6 +21,8 @@ import { EmailService } from './services/nodemailer.service';
 import { jwtGuard } from './middlewares/jwt-guard/jwt-guard.middleware';
 import { BookingController } from './controllers/booking/booking.controller';
 import { StripeService } from './services/stripe.service';
+import { CronService } from './services/cron.service';
+import { WebhookController } from './controllers/webhook/webhook.controller';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { StripeService } from './services/stripe.service';
     UserController,
     ViewsController,
     BookingController,
+    WebhookController,
   ],
   providers: [
     AppService,
@@ -49,9 +52,13 @@ import { StripeService } from './services/stripe.service';
     JWTService,
     EmailService,
     StripeService,
+    CronService,
   ],
 })
 export class AppModule implements NestModule {
+  constructor(private readonly cronService: CronService) {
+    this.cronService.scheduleTasks();
+  }
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(isAdm)

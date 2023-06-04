@@ -11,18 +11,14 @@ export class StripeService {
     });
   }
 
-  async criarLinkDePagamento(
-    descricao: string,
-    valor: number,
-    days: number,
-  ): Promise<string> {
+  async criarLinkDePagamento(descricao: string, valor: number, days: number) {
     const product = await this.stripe.products.create({
       name: descricao,
       type: 'service',
     });
 
     const price = await this.stripe.prices.create({
-      unit_amount: valor * 100,
+      unit_amount: valor,
       currency: 'brl',
       product: product.id,
     });
@@ -40,6 +36,6 @@ export class StripeService {
       cancel_url: 'https://seusite.com/cancelamento',
     });
 
-    return session.url;
+    return { url: session.url, id: session.id };
   }
 }
