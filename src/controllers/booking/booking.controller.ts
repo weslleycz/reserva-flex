@@ -6,6 +6,7 @@ import {
   Post,
   Headers,
   Get,
+  Param,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -114,5 +115,30 @@ export class BookingController {
         userId: token.data,
       },
     });
+  }
+
+  @Get('hotel/:id')
+  @ApiOperation({
+    summary: 'Listar todos as reservas por hotel',
+    description: 'Rota para listar todos as reservas por hotel.',
+  })
+  async listAllHotel(@Param('id') id: string) {
+    const roomsIDs = await this.prismaService.room.findMany({
+      where: {
+        hotelId: id,
+        availability: 'Unavailable',
+      },
+      select: {
+        id: true,
+      },
+    });
+    const rooms = await this.prismaService.booking.findMany({
+      where: {
+        roomId: {
+          in: roomsIDs.map((item) => item.id),
+        },
+      },
+    });
+    return rooms;
   }
 }
