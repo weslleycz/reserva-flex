@@ -70,9 +70,7 @@ export class BookingController {
       const checkoutDateBD = moment(`${year}-${month}-${day}`)
         .add(days, 'day')
         .toString();
-      const paymentTerm = moment(`${year}-${month}-${day}`)
-        .add(1, 'day')
-        .toString();
+      const paymentTerm = moment(new Date()).add(1, 'day').toString();
       await this.prismaService.booking.create({
         data: {
           checkinDate: checkinDateBD,
@@ -184,4 +182,42 @@ export class BookingController {
       );
     }
   }
+
+  @Get('check/:id')
+  @ApiHeader({
+    name: 'token',
+    description: 'Token de acesso',
+    required: true,
+    example: 'token <token>',
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Realizar check in ',
+    description: 'Rota para realizar check in .',
+  })
+  @ApiResponse({ status: 200, description: 'Check in realizado' })
+  @ApiResponse({
+    status: 400,
+    description: 'Não foi possivel realizar check in',
+  })
+  async checkBooking(@Param('id') id: string) {
+    try {
+      await this.prismaService.booking.update({
+        where: {
+          id,
+        },
+        data: {
+          status: 'Check',
+        },
+      });
+      return { message: 'Check in realizado' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possivel realizar check in',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  
 }
