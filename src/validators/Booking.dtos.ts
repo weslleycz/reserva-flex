@@ -6,7 +6,7 @@ export class CreateBookingDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsDate()
-  checkinDate: Date;
+  checkinDate: string;
 
   @ApiProperty()
   @IsNotEmpty()

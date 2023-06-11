@@ -51,6 +51,7 @@ export class BookingController {
     @Headers() headers: Record<string, string>,
   ) {
     const { checkinDate, numberOfGuests, roomId, days } = data;
+    const [day, month, year] = checkinDate.split('/');
     const room = await this.prismaService.room.findUnique({
       where: {
         id: roomId,
@@ -66,9 +67,13 @@ export class BookingController {
       const checkoutDate = moment(new Date(checkinDate))
         .add(days, 'days')
         .toString();
-      const checkinDateBD = new Date(checkinDate).toString();
-      const checkoutDateBD = new Date(checkoutDate).toString();
-      const paymentTerm = moment(new Date()).add(1, 'day').toISOString();
+      const checkinDateBD = moment(
+        new Date(`${year}-${month}-${day}`),
+      ).toString();
+      const checkoutDateBD = moment(new Date(checkoutDate)).toString();
+      const paymentTerm = moment(`${year}-${month}-${day}`)
+        .add(1, 'day')
+        .toString();
       await this.prismaService.booking.create({
         data: {
           checkinDate: checkinDateBD,

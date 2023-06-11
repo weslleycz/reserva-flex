@@ -1,10 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as cron from 'node-cron';
 import { PrismaService } from './prisma.service';
+import { RedisService } from './redis.service';
 
 @Injectable()
 export class CronService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly redisService: RedisService,
+  ) {}
   private readonly logger = new Logger(CronService.name);
 
   scheduleTasks() {
@@ -15,6 +19,8 @@ export class CronService {
   }
   async checkPendingPaymentOverdue() {
     this.logger.debug('Verificar o status do pagamento e a data de vencimento');
+    const test = await this.redisService.getValue('test');
+    console.log(test);
     const pending = await this.prismaService.booking.findMany({
       where: {
         status: 'Pending',

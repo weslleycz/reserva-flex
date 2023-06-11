@@ -16,3 +16,7 @@ services:
             STRIPE_API_KEY: sk_test_51NDHK5Ai8Xa5uilnbiauSBkAsYOPgE1El2HIHHQdhexLIz5mMPBDobwKHQtHw1PZ5ORJcKGoDguR9MWWYI7QFIWt00ehCAHCF0
             STRIPE_DEVICE_NAME: ${STRIPE_DEVICE_NAME}
         command: listen --forward-to localhost:3000/webhook
+    redis:
+        image: redis
+        ports:
+            - 6379:6379

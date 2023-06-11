@@ -3,6 +3,7 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  forwardRef,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -23,6 +24,8 @@ import { BookingController } from './controllers/booking/booking.controller';
 import { StripeService } from './services/stripe.service';
 import { CronService } from './services/cron.service';
 import { WebhookController } from './controllers/webhook/webhook.controller';
+import { NotificationController } from './controllers/notification/notification.controller';
+import { RedisService } from './services/redis.service';
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import { WebhookController } from './controllers/webhook/webhook.controller';
     ViewsController,
     BookingController,
     WebhookController,
+    NotificationController,
   ],
   providers: [
     AppService,
@@ -53,6 +57,7 @@ import { WebhookController } from './controllers/webhook/webhook.controller';
     EmailService,
     StripeService,
     CronService,
+    RedisService,
   ],
 })
 export class AppModule implements NestModule {
