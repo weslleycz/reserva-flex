@@ -7,11 +7,13 @@ import {
   Headers,
   Get,
   Param,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import moment from 'moment';
@@ -134,11 +136,48 @@ export class BookingController {
     });
     const rooms = await this.prismaService.booking.findMany({
       where: {
+        status: 'Confirmed',
         roomId: {
           in: roomsIDs.map((item) => item.id),
         },
       },
     });
     return rooms;
+  }
+
+  @Delete(':id')
+  @ApiHeader({
+    name: 'token',
+    description: 'Token de acesso',
+    required: true,
+    example: 'token <token>',
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Cancelar reserva',
+    description: 'Rota para cancelar reserva.',
+  })
+  @ApiResponse({ status: 200, description: 'Reserva canselada' })
+  @ApiResponse({
+    status: 400,
+    description: 'Não foi possível cancelar reserva',
+  })
+  async cancel(@Param('id') id: string) {
+    try {
+      await this.prismaService.booking.update({
+        where: {
+          id,
+        },
+        data: {
+          status: 'Cancelada',
+        },
+      });
+      return { message: 'Reserva canselada' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possível cancelar reserva',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
