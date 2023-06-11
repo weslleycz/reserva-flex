@@ -219,5 +219,47 @@ export class BookingController {
     }
   }
 
-  
+  @Get('checkOut/:id')
+  @ApiHeader({
+    name: 'token',
+    description: 'Token de acesso',
+    required: true,
+    example: 'token <token>',
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Realizar check out.',
+    description: 'Rota para realizar check out.',
+  })
+  @ApiResponse({ status: 200, description: 'Check out realizado' })
+  @ApiResponse({
+    status: 400,
+    description: 'Não foi possivel realizar check out',
+  })
+  async checkOutBooking(@Param('id') id: string) {
+    try {
+      const booking = await this.prismaService.booking.update({
+        where: {
+          id,
+        },
+        data: {
+          status: 'Check',
+        },
+      });
+      await this.prismaService.room.update({
+        where: {
+          id: booking.roomId,
+        },
+        data: {
+          availability: 'Available',
+        },
+      });
+      return { message: 'Check out realizado' };
+    } catch (error) {
+      throw new HttpException(
+        'Não foi possivel realizar check out',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
