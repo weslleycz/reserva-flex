@@ -20,4 +20,8 @@ export class RedisService {
   async getValue(key: string): Promise<string | null> {
     return this.redisClient.get(key);
   }
+
+  async delValue(key: string): Promise<void> {
+    await this.redisClient.del(key);
+  }
 }

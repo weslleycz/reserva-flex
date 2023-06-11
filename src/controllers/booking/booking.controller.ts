@@ -64,13 +64,12 @@ export class BookingController {
         days,
       );
       const token = <IJWT>this.jwt.decode(headers.token);
-      const checkoutDate = moment(new Date(checkinDate))
-        .add(days, 'days')
-        .toString();
       const checkinDateBD = moment(
         new Date(`${year}-${month}-${day}`),
       ).toString();
-      const checkoutDateBD = moment(new Date(checkoutDate)).toString();
+      const checkoutDateBD = moment(`${year}-${month}-${day}`)
+        .add(days, 'day')
+        .toString();
       const paymentTerm = moment(`${year}-${month}-${day}`)
         .add(1, 'day')
         .toString();

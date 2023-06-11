@@ -5,9 +5,9 @@ export interface Props {
 }
 
 const Sucesso = ({ name }: Props): ReactElement => (
-  <body
-    style={{ background: '#F7F6F6', textAlign: 'center', padding: '10%' }}
-  ></body>
+  <body style={{ background: '#F7F6F6', textAlign: 'center', padding: '10%' }}>
+    gggggg
+  </body>
 );
 
 export default Sucesso;
