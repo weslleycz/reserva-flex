@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Headers,
+  Get,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -92,5 +93,26 @@ export class BookingController {
         HttpStatus.UNAUTHORIZED,
       );
     }
+  }
+
+  @Get()
+  @ApiHeader({
+    name: 'token',
+    description: 'Token de acesso',
+    required: true,
+    example: 'token <token>',
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Listar todos as reservas por usuario',
+    description: 'Rota para listar todos as reservas por usuario.',
+  })
+  async listAll(@Headers() headers: Record<string, string>) {
+    const token = <IJWT>this.jwt.decode(headers.token);
+    return this.prismaService.booking.findMany({
+      where: {
+        userId: token.data,
+      },
+    });
   }
 }

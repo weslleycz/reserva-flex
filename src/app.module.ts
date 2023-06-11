@@ -79,5 +79,8 @@ export class AppModule implements NestModule {
     consumer
       .apply(jwtGuard)
       .forRoutes({ path: 'booking', method: RequestMethod.POST });
+    consumer
+      .apply(jwtGuard)
+      .forRoutes({ path: 'booking', method: RequestMethod.GET });
   }
 }
