@@ -6,10 +6,9 @@ export class RedisService {
   private readonly redisClient: Redis;
 
   constructor() {
-    // Configuração do cliente Redis
     this.redisClient = new Redis({
-      host: 'localhost', // Host do seu servidor Redis
-      port: 6379, // Porta do seu servidor Redis
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT as unknown as number,
     });
   }
 

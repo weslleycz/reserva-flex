@@ -16,7 +16,6 @@ async function bootstrap() {
     .addTag('Exemplo', 'Hotel')
     .addTag('Room')
     .addTag('User')
-    .addTag('Webhook')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

@@ -62,6 +62,7 @@ import { RedisService } from './services/redis.service';
 export class AppModule implements NestModule {
   constructor(private readonly cronService: CronService) {
     this.cronService.scheduleTasks();
+    this.cronService.scheduleTasksAtTwelveOclock();
   }
   configure(consumer: MiddlewareConsumer) {
     consumer

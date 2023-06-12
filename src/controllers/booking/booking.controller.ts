@@ -19,6 +19,7 @@ import {
 import moment from 'moment';
 import { JWTService } from 'src/services/jwt.service';
 import { PrismaService } from 'src/services/prisma.service';
+import { RedisService } from 'src/services/redis.service';
 import { StripeService } from 'src/services/stripe.service';
 import { CreateBookingDto } from 'src/validators/Booking.dtos';
 
@@ -32,6 +33,7 @@ export class BookingController {
   constructor(
     private stripeService: StripeService,
     private prismaService: PrismaService,
+    private redisService: RedisService,
     private jwt: JWTService,
   ) {}
   @Post()
@@ -185,10 +187,10 @@ export class BookingController {
 
   @Get('check/:id')
   @ApiHeader({
-    name: 'token',
+    name: 'Security_Key',
     description: 'Token de acesso',
     required: true,
-    example: 'token <token>',
+    example: 'token <Security_Key>',
   })
   @ApiBearerAuth()
   @ApiOperation({
@@ -201,8 +203,9 @@ export class BookingController {
     description: 'Não foi possivel realizar check in',
   })
   async checkBooking(@Param('id') id: string) {
+    console.log(123456678);
     try {
-      await this.prismaService.booking.update({
+      const booking = await this.prismaService.booking.update({
         where: {
           id,
         },
@@ -210,6 +213,15 @@ export class BookingController {
           status: 'Check',
         },
       });
+      await this.redisService.setValue(
+        booking.userId,
+        JSON.stringify({
+          title: 'Check in',
+          message:
+            'Bem-vindo(a)! Seu quarto está pronto e aguardando por você.',
+          type: 'success',
+        }),
+      );
       return { message: 'Check in realizado' };
     } catch (error) {
       throw new HttpException(
@@ -243,7 +255,7 @@ export class BookingController {
           id,
         },
         data: {
-          status: 'Check',
+          status: 'CheckOut',
         },
       });
       await this.prismaService.room.update({
@@ -254,6 +266,15 @@ export class BookingController {
           availability: 'Available',
         },
       });
+      await this.redisService.setValue(
+        booking.userId,
+        JSON.stringify({
+          title: 'Check out',
+          message:
+            'Agradecemos sinceramente a sua visita e esperamos vê-lo novamente em breve!',
+          type: 'success',
+        }),
+      );
       return { message: 'Check out realizado' };
     } catch (error) {
       throw new HttpException(

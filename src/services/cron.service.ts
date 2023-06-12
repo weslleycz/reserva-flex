@@ -12,11 +12,17 @@ export class CronService {
   private readonly logger = new Logger(CronService.name);
 
   scheduleTasks() {
-    // Exemplo: agendando uma tarefa para ser executada a cada minuto
     cron.schedule('* * * * *', async () => {
       this.checkPendingPaymentOverdue();
     });
   }
+
+  scheduleTasksAtTwelveOclock() {
+    cron.schedule('0 10 * * *', async () => {
+      this.checkAndNotifyLastDayOfReservation();
+    });
+  }
+
   async checkPendingPaymentOverdue() {
     this.logger.debug('Verificar o status do pagamento e a data de vencimento');
     const pending = await this.prismaService.booking.findMany({
@@ -56,6 +62,29 @@ export class CronService {
           availability: 'Available',
         },
       });
+    });
+  }
+
+  async checkAndNotifyLastDayOfReservation() {
+    this.logger.debug('Verificar se o trmpo de estadia terminou');
+    const bookings = await this.prismaService.booking.findMany({
+      where: {
+        checkoutDate: {
+          lte: new Date().toString(),
+        },
+        status: 'Check',
+      },
+    });
+    bookings.map(async (booking) => {
+      this.redisService.setValue(
+        booking.userId,
+        JSON.stringify({
+          title: 'Status da reserva',
+          message:
+            'Seu tempo de estadia terminou. Agradecemos por sua preferência.',
+          type: 'info',
+        }),
+      );
     });
   }
 }
