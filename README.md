@@ -29,6 +29,9 @@ Antes de iniciar, verifique se você possui o seguinte instalado:
    npm install
 3. Inicie o servidor de desenvolvimento:
    ```shell
+   docker-compose up
+4. Execute o projeto com o Docker Compose:
+   ```shell
    npm run start:dev
 
 ## Configuração do ambiente
@@ -36,10 +39,18 @@ Antes de iniciar, verifique se você possui o seguinte instalado:
 Antes de executar o projeto, é necessário configurar as seguintes variáveis de ambiente:
 
 
+
 - `DATABASE_URL`: URL da base de dados utilizada para armazenar as reservas.
-- `Security_Key`: Senha de segurança para mockar o token de administrador .
-- `MONGO_USERNAME`: Usuário do mongodb.
-- `MONGO_PASSWORD`: Senha do mongodb.
+- `Security_Key`: Senha de segurança para mockar o token de administrador.
+- `Security_JWT`: Chave secreta utilizada para assinar e verificar tokens JWT.
+- `MONGO_USERNAME`: Usuário do MongoDB.
+- `MONGO_PASSWORD`: Senha do MongoDB.
+- `EMAIL`: Endereço de e-mail utilizado para enviar confirmações de reserva.
+- `EMAIL_PASSWORD`: Senha do e-mail utilizado para enviar confirmações de reserva.
+- `STRIPE_PUBLIC_KAY`: Chave pública do Stripe para integração de pagamentos.
+- `STRIPE_PRIVATE_KAY`: Chave privada do Stripe para integração de pagamentos.
+- `REDIS_HOST`: Host do servidor Redis para armazenamento em cache.
+- `REDIS_PORT`: Porta do servidor Redis para armazenamento em cache.
 
 ## Tecnologias utilizadas
 
@@ -48,5 +59,12 @@ O projeto utiliza as seguintes tecnologias:
 - **Prisma.js**: ORM (Object-Relational Mapping) de banco de dados que facilita o acesso e manipulação dos dados.
 - **NestJS**: Framework Node.js para construção de aplicações server-side.
 - **TypeScript**: Linguagem de programação que adiciona recursos ao JavaScript.
-- **Socket.IO**: Biblioteca de WebSockets para comunicação em tempo real.
-- **MongoDB**: MongoDB é um software de banco de dados orientado a documentos livre, de código aberto e multiplataforma, escrito na linguagem C++.
+- **MongoDB**: Banco de dados orientado a documentos que fornece uma maneira flexível e escalável de armazenar dados.
+- **Redis**: Sistema de armazenamento em cache em memória rápido e de alto desempenho.
+- **Stripe**: Plataforma de pagamentos online para processar transações financeiras de forma segura e confiável.
+- **Nodemailer**: Módulo do Node.js para envio de e-mails que oferece uma interface fácil de usar e suporte a vários provedores de e-mail.
+- **bcrypt**: Biblioteca para criptografia de senhas que fornece funções de hash seguras para armazenamento seguro de senhas.
+- **cron**: Biblioteca para agendamento de tarefas cron para executar ações em intervalos específicos.
+- **GridFS**: Sistema de arquivos para armazenamento e recuperação de arquivos de grande porte no MongoDB.
+- **JWT**: JSON Web Tokens são utilizados para autenticação e autorização de usuários, fornecendo um token seguro que pode ser verificado e decodificado.
+- **EventSource**: Interface do navegador para consumir eventos em tempo real do servidor por meio do protocolo Server-Sent Events (SSE).
