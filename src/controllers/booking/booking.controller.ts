@@ -203,7 +203,6 @@ export class BookingController {
     description: 'Não foi possivel realizar check in',
   })
   async checkBooking(@Param('id') id: string) {
-    console.log(123456678);
     try {
       const booking = await this.prismaService.booking.update({
         where: {
@@ -233,10 +232,10 @@ export class BookingController {
 
   @Get('checkOut/:id')
   @ApiHeader({
-    name: 'token',
+    name: 'Security_Key',
     description: 'Token de acesso',
     required: true,
-    example: 'token <token>',
+    example: 'token <Security_Key>',
   })
   @ApiBearerAuth()
   @ApiOperation({

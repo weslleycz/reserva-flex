@@ -90,5 +90,11 @@ export class AppModule implements NestModule {
     consumer
       .apply(jwtGuard)
       .forRoutes({ path: 'booking', method: RequestMethod.DELETE });
+    consumer
+      .apply(isAdm)
+      .forRoutes({ path: 'booking/check/:id', method: RequestMethod.GET });
+    consumer
+      .apply(isAdm)
+      .forRoutes({ path: 'booking/checkOut/:id', method: RequestMethod.GET });
   }
 }

@@ -2,16 +2,27 @@ import { Controller, Get, Req, Res } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { RedisService } from '../../services/redis.service';
 import { JWTService } from 'src/services/jwt.service';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 type IJWT = {
   data: string;
 };
 
 @Controller('notification')
+@ApiTags('Notification')
 export class NotificationController {
   constructor(private redisService: RedisService, private jwt: JWTService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Disparar notificação',
+    description: 'Essa rota dispara evento de notificação.',
+  })
+  @ApiQuery({
+    name: 'token',
+    description: 'Token do usuário',
+    required: true,
+  })
   async stream(@Req() req: Request, @Res() res: Response) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');

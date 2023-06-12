@@ -32,7 +32,7 @@ export class StripeService {
         },
       ],
       mode: 'payment',
-      success_url: 'https://seusite.com/sucesso',
+      success_url: `http://localhost:3000/views?code=${product.id}`,
       cancel_url: 'https://seusite.com/cancelamento',
     });
 

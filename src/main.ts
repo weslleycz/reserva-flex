@@ -13,9 +13,10 @@ async function bootstrap() {
       'Este é um sistema de reservas construído com o NestJS que permite aos usuários fazerem reservas em hotel.',
     )
     .setVersion('1.0')
-    .addTag('Exemplo', 'Hotel')
+    .addTag('Hotel')
     .addTag('Room')
     .addTag('User')
+    .addTag('Notification')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

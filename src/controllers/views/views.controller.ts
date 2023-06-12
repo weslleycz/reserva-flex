@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Res } from '@nestjs/common';
+import { Controller, Get, Render, Res, Query } from '@nestjs/common';
 import { Props } from '../../views/sucesso';
 import { Response } from 'express';
 import { join } from 'node:path';
@@ -7,8 +7,8 @@ import { join } from 'node:path';
 export class ViewsController {
   @Get()
   @Render('sucesso')
-  index(): Props {
-    return { name: 'hjkkk' };
+  index(@Query('code') code: string): Props {
+    return { code };
   }
 
   @Get('styles')
